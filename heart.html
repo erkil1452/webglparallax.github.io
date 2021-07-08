@@ -2,19 +2,46 @@
 <html>
 
 <body>
-    <canvas id="c" width=800 height=800 style="border: 4px solid #ccc;"></canvas>
+    <canvas id="c" width=800 height=800></canvas>
 
     <script type="module">
         import * as THREE from 'https://cdn.skypack.dev/three';
         import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader.js';
         import { CameraUtils } from 'https://cdn.skypack.dev/three/examples/jsm/utils/CameraUtils.js';
 
+        function getPageSize() {
+            var myWidth = 0, myHeight = 0;
+            if (typeof (window.innerWidth) == 'number') {
+                //Non-IE
+                myWidth = window.innerWidth;
+                myHeight = window.innerHeight;
+            } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
+                //IE 6+ in 'standards compliant mode'
+                myWidth = document.documentElement.clientWidth;
+                myHeight = document.documentElement.clientHeight;
+            } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
+                //IE 4 compatible
+                myWidth = document.body.clientWidth;
+                myHeight = document.body.clientHeight;
+            }
+            return [myWidth, myHeight];
+        }
+
         function main() {
+
             const canvas = document.querySelector('#c');
+            const page_size = getPageSize()
+            console.log(page_size);
+            canvas.width = page_size[0];
+            canvas.height = page_size[1];
+            console.log(page_size);
+
+
             const renderer = new THREE.WebGLRenderer({ canvas });
 
             const fov = 75;
             const aspect = canvas.width / canvas.height;  // the canvas default
+            console.log(aspect);
             const near = 0.1;
             const far = 5;
             const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -49,7 +76,7 @@
 
                 //camera.updateProjectionMatrix();
                 var height = 2;
-                var width = height / aspect;
+                var width = height * aspect;
                 CameraUtils.frameCorners(camera,
                     new THREE.Vector3(-width, -height, 0),
                     new THREE.Vector3(width, -height, 0),
